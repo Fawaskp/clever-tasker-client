@@ -60,20 +60,42 @@ function openDeleteModal(taskId, taskTitle) {
     });
 }
 
-function getEditAndDeleteBtn(event) {
+function changeCompleteStatus(taskId,status){
+  const url = status=='Completed'? 'uncompleted' : 'completed' 
+  try{
+    fetch(`${TASK_API_URL}/mark-${url}/${taskId}/`,{
+      method:"POST",
+      headers:{
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      }
+    }).then((response)=>{
+      if(response.ok){
+        loadTasks()
+      }
+    })
+  }
+  catch(err){
+
+  }
+
+}
+
+function getButtons(event) {
+
   const commonClasses = [
     "text-white",
     "p-2",
     "text-sm",
     "rounded-full",
     "focus:outline-none",
-    "mt-2",
   ];
+
+  
 
   const editBtn = document.createElement("button");
   editBtn.classList.add(
-    "bg-blue-500",
-    "hover:bg-blue-600",
+    "hover:bg-gray-200",
     "mr-2",
     ...commonClasses
   );
@@ -90,7 +112,7 @@ function getEditAndDeleteBtn(event) {
 </svg>`;
 
   const deleteBtn = document.createElement("button");
-  deleteBtn.classList.add("bg-red-500", "hover:bg-red-600", ...commonClasses);
+  deleteBtn.classList.add("hover:bg-gray-200", ...commonClasses);
   deleteBtn.innerHTML = `<svg
   xmlns="http://www.w3.org/2000/svg"
   x="0px"
@@ -104,12 +126,42 @@ function getEditAndDeleteBtn(event) {
   ></path>
 </svg>`;
 
+
+  let markCompleteIcon = `Mark completed <svg class="ms-4" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
+  <path fill="#c8e6c9" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"></path><path fill="#4caf50" d="M34.586,14.586l-13.57,13.586l-5.602-5.586l-2.828,2.828l8.434,8.414l16.395-16.414L34.586,14.586z"></path>
+  </svg>`
+
+    if(event.status == 'Completed'){
+      markCompleteIcon = `Mark Uncompleted <svg class="ms-2" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="17" height="17" viewBox="0 0 40 40">
+  <path fill="#f78f8f" d="M20,38.5C9.799,38.5,1.5,30.201,1.5,20S9.799,1.5,20,1.5S38.5,9.799,38.5,20S30.201,38.5,20,38.5z"></path><path fill="#c74343" d="M20,2c9.925,0,18,8.075,18,18s-8.075,18-18,18S2,29.925,2,20S10.075,2,20,2 M20,1 C9.507,1,1,9.507,1,20s8.507,19,19,19s19-8.507,19-19S30.493,1,20,1L20,1z"></path><path fill="#fff" d="M18.5 10H21.5V30H18.5z" transform="rotate(-134.999 20 20)"></path><path fill="#fff" d="M18.5 10H21.5V30H18.5z" transform="rotate(-45.001 20 20)"></path>
+  </svg>`
+    }
+
+  const markCompleteBtn = document.createElement('button')
+  markCompleteBtn.classList.add( "text-black", 
+    "hover:bg-gray-100", 
+    "font-medium", 
+    "rounded-lg", 
+    "text-sm", 
+    "px-2", 
+    "py-2", 
+    "text-center", 
+    "inline-flex", 
+    "items-center", 
+    "dark:hover:bg-gray-100")
+    markCompleteBtn.innerHTML = markCompleteIcon
+
+
+
   editBtn.addEventListener("click", () => openEditModal(event));
   deleteBtn.addEventListener("click", () =>
     openDeleteModal(event.id, event.title)
   );
+  markCompleteBtn.addEventListener('click', ()=>{
+    changeCompleteStatus(event.id,event.status)
+  })
 
-  return [editBtn, deleteBtn];
+  return [editBtn, deleteBtn, markCompleteBtn];
 }
 
 function separateDateTime(datetimeStr) {
@@ -152,10 +204,7 @@ function loadTasks(filter="") {
         tasks.forEach((event) => {
           let statusColorTheme = 'yellow'
           const [day, month, year, time] = separateDateTime(event.start);
-            if(event.status == 'In Progress'){
-              statusColorTheme = 'blue'
-            }
-            else if(event.status == 'Completed'){
+            if(event.status == 'Completed'){
               statusColorTheme =  'green'
             }
 
@@ -192,18 +241,19 @@ function loadTasks(filter="") {
           
           // details
           const thirdPart = document.createElement("div");
-          thirdPart.classList.add("w-3/12","px-2")
+          thirdPart.classList.add("w-2/5","px-2")
           thirdPart.innerHTML = ` <div>
             <p class="text-gray-500">Details:</p> 
             <span class="text-sm" >${event.description}</span>
           </div>`
           
           // edit&delete buttons
-          const [editBtn, deleteBtn] = getEditAndDeleteBtn(event);
+          const [editBtn, deleteBtn, markCompleteBtn] = getButtons(event);
           const btnContainer = document.createElement("div");
-          btnContainer.classList.add("float-right");
+          btnContainer.classList.add("float-right","flex","justify-between","items-center");
           btnContainer.appendChild(editBtn);
           btnContainer.appendChild(deleteBtn);
+          btnContainer.appendChild(markCompleteBtn);
           thirdPart.appendChild(btnContainer)
 
           eventItem.appendChild(firstPart)

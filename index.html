@@ -55,7 +55,6 @@
     </style>
   </head>
   <body class="bg-gray-100">
-
     <!-- Tab Buttons -->
     <div class="container mx-auto p-6 flex justify-between">
       <h1 class="text-2xl font-bold">
@@ -95,6 +94,7 @@
         </button>
       </div>
     </div>
+    <!-- Tab Buttons End-->
 
     <!-- Task Add Model -->
     <div
@@ -215,108 +215,119 @@
     </div>
     <!-- Task Add Modal End -->
 
-    <div class="mx-auto w-full max-w-4xl flex justify-between items-center px-4" >
-      <div class="w-1/2" >
-        <span class="font-semibold text-gray-600" >Total: </span> <span id="total-task-count" ></span>
+    <!-- Filter buttons -->
+    <div
+      class="mx-auto w-full max-w-3xl flex justify-between items-center px-4"
+    >
+      <div class="w-1/2">
+        <span class="font-semibold text-gray-600">Total: </span>
+        <span id="total-task-count"></span>
       </div>
 
       <div class="row flex mx-auto w-1/2 justify-end mb-2">
-        <button onclick="loadTasks()" class="rounded-md rounded-r-none border border-r-0 border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+        <button
+          onclick="loadTasks()"
+          class="rounded-md rounded-r-none border border-r-0 border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          type="button"
+        >
           All
         </button>
-        <button onclick="loadTasks('status=pending')" class="rounded-md rounded-r-none rounded-l-none border border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+        <button
+          onclick="loadTasks('status=pending')"
+          class="rounded-md rounded-r-none rounded-l-none border border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          type="button"
+        >
           Pending
         </button>
-        <button onclick="loadTasks('status=in_progress')" class="rounded-md rounded-r-none rounded-l-none border border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
-          Progress
-        </button>
-        <button onclick="loadTasks('status=completed')" class="rounded-md rounded-l-none border border-l-0 border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+        <button
+          onclick="loadTasks('status=completed')"
+          class="rounded-md rounded-l-none border border-l-0 border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          type="button"
+        >
           Completed
         </button>
       </div>
     </div>
+    <!-- Filter buttons End -->
 
-    <!-- Tab Content -->
-    <div>
-      <div id="tab1Content" class="tab-content">
-        <div class="bg-white shadow rounded-lg p-4 mx-auto max-w-4xl">
-          <div id="calendar" class="w-full"></div>
+    <!-- Tab-1 Content -->
+    <div id="tab1Content" class="tab-content mb-4">
+      <div class="bg-white shadow rounded-lg p-4 mx-auto max-w-3xl">
+        <div id="calendar" class="w-full"></div>
+      </div>
+    </div>
+    <!-- Tab-1 Content -->
+
+    <!-- Tab-2 Content -->
+    <div id="tab2Content" class="tab-content">
+      <div id="eventList" class="event-list w-full max-w-3xl space-y-2 mx-auto">
+        <div class="w-full bg-gray-200 text-center rounded-lg p-4 select-none">
+          No Tasks to show
         </div>
       </div>
-     
-      <div id="tab2Content" class="tab-content">
-        <div
-        id="eventList"
-        class="event-list w-full max-w-4xl space-y-2 mx-auto"
-        >
-        <div
-        class="w-full bg-gray-200 text-center rounded-lg p-4 select-none"
-        >
-        No Tasks to show
+    </div>
+    <!-- Tab-2 Content eND -->
+
+    <!-- Task View Modal -->
+    <div
+      id="task-detailed-view-modal"
+      style="margin: 0"
+      class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden"
+    >
+      <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-2xl font-semibold">Task Details</h2>
+          <button
+            id="task-detailed-view-close-modal"
+            class="text-gray-600 hover:text-gray-900"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="mb-4">
+          <h3 class="font-medium text-gray-700">Title:</h3>
+          <p id="task-detailed-view-title" class="text-sm text-gray-900"></p>
+        </div>
+
+        <div class="mb-4">
+          <h3 class="font-medium text-gray-700">Description:</h3>
+          <p
+            id="task-detailed-view-description"
+            class="text-sm text-gray-900"
+          ></p>
+        </div>
+
+        <div class="mb-4">
+          <h3 class="font-medium text-gray-700">Start:</h3>
+          <p id="task-detailed-view-start" class="text-sm text-gray-900"></p>
+        </div>
+
+        <div class="flex justify-end space-x-2">
+          <button
+            type="button"
+            id="cancel-btn"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+            onclick="document.getElementById('task-detailed-view-modal').classList.add('hidden')"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
-
-
-<!-- Task View Modal -->
-<div
-  id="task-detailed-view-modal"
-  style="margin: 0"
-  class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden"
->
-  <div class="bg-white rounded-lg shadow-lg w-96 p-6">
-    <div class="flex justify-between items-center mb-2">
-      <h2 class="text-2xl font-semibold">Task Details</h2>
-      <button
-        id="task-detailed-view-close-modal"
-        class="text-gray-600 hover:text-gray-900"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div>
-
-    <div class="mb-4">
-      <h3 class="font-medium text-gray-700">Title:</h3>
-      <p id="task-detailed-view-title" class="text-sm text-gray-900"></p>
-    </div>
-
-    <div class="mb-4">
-      <h3 class="font-medium text-gray-700">Description:</h3>
-      <p
-        id="task-detailed-view-description"
-        class="text-sm text-gray-900"
-      ></p>
-    </div>
-
-    <div class="mb-4">
-      <h3 class="font-medium text-gray-700">Start:</h3>
-      <p id="task-detailed-view-start" class="text-sm text-gray-900"></p>
-    </div>
-
-    <div class="flex justify-end space-x-2">
-      <button
-        type="button"
-        id="cancel-btn"
-        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
-        onclick="document.getElementById('task-detailed-view-modal').classList.add('hidden')"
-      >
-        Close
-      </button>
-    </div>
-  </div>
-</div>
-<!-- Task View Modal End -->
+    <!-- Task View Modal End -->
 
     <!-- Task Edit Modal -->
     <div
@@ -448,7 +459,7 @@
     >
       <div class="bg-white rounded-lg shadow-lg w-96 p-6">
         <div class="flex justify-between items-center mb-2">
-          <h3 class="text-lg font-semibold">
+          <h3 class="font-semibold">
             Are sure to delete "<span id="deleting-task-title"></span>"
           </h3>
           <button
@@ -478,7 +489,7 @@
           <button
             id="task-delete-form-submit-btn"
             type="submit"
-            class="text-white bg-red-700 hover:bg-red-600 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800 inline-flex items-center"
+            class="text-white bg-red-700 hover:bg-red-600 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-2 text-center me-2 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800 inline-flex items-center"
           >
             <span class="hidden" id="task-delete-form-loader">
               <!-- loading Spinner -->
@@ -501,13 +512,14 @@
               </svg>
               <span>Loading</span>
             </span>
-            <span id="task-delete-form-submit-btn-text">Yes, Delete</span>
+            <span id="task-delete-form-submit-btn-text" class="text-xs" >Yes, Delete</span>
           </button>
         </form>
       </div>
     </div>
     <!-- Task Delete Modal End-->
 
+    <!-- Scripts  -->
     <script src="js/index.js"></script>
     <script src="js/taskModal.js"></script>
     <!-- Form handler should import after index.js  -->
