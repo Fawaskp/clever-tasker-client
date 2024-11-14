@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      const AUTH_API_URL = "http://localhost:8000/auth/api";
+      const accessToken = localStorage.getItem("access_token");
+
+      function deleteTokens() {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+      }
+
+      function validateToken() {
+        fetch(`${AUTH_API_URL}/validate-token/`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }).then((response) => {
+          if (!response.ok) {
+            console.log("token is not valid...");
+            deleteTokens();
+          } else {
+            console.log("token is valid...");
+          }
+        });
+      }
+
+      if (accessToken) {
+        validateToken();
+      } else {
+        window.location.href = "/login.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="icon"
+      href="https://seeklogo.com/images/G/google-tasks-logo-13FF231D18-seeklogo.com.png"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+
+    <!-- Tab Buttons -->
+    <div class="container mx-auto p-6 flex justify-between">
+      <h1 class="text-2xl font-bold">
+        <span class="text-blue-500">C</span>lever<span class="text-blue-500"
+          >T</span
+        >asker
+      </h1>
+
+      <div class="mb-6 w-full flex justify-center space-x-4">
+        <button
+          id="tab1Btn"
+          class="tab-btn px-20 py-2 text-lg font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+        >
+          Calendar
+        </button>
+        <button
+          id="tab2Btn"
+          class="tab-btn px-20 py-2 text-lg font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+        >
+          Tasks
+        </button>
+        <button
+          id="task-add-btn"
+          class="tab-btn px-10 py-2 text-lg font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 transition"
+        >
+          <span>+ Add</span>
+        </button>
+      </div>
+
+      <div>
+        <span id="user-name">User</span>
+        <button
+          id="logout-btn"
+          class="btn-sm px-2 py-1 text-sm text-blue-400 rounded-md hover:bg-gray-200 transition"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- Task Add Model -->
+    <div
+      id="task-add-modal"
+      style="margin: 0"
+      class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden"
+    >
+      <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-2xl font-semibold">Add Task</h2>
+          <button id="close-modal" class="text-gray-600 hover:text-gray-900">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <p id="task-add-response-message" class="text-sm mb-2"></p>
+
+        <!-- Modal Form -->
+        <form id="task-add-form">
+          <div class="mb-4">
+            <label
+              for="task-title"
+              class="block text-sm font-medium text-gray-700"
+              >Task Title</label
+            >
+            <input
+              type="text"
+              id="task-title"
+              name="title"
+              required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label
+              for="task-description"
+              class="block text-sm font-medium text-gray-700"
+              >Description</label
+            >
+            <textarea
+              id="task-description"
+              name="description"
+              rows="4"
+              required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label
+              for="task-start"
+              class="block text-sm font-medium text-gray-700"
+              >Start Date & Time</label
+            >
+            <input
+              type="datetime-local"
+              id="task-start"
+              name="start"
+              value="2024-11-14T09:00"
+              required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              id="cancel-btn"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+            >
+              Cancel
+            </button>
+
+            <button
+              id="submit-btn"
+              type="submit"
+              class="text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800 inline-flex items-center"
+            >
+              <span class="hidden" id="task-add-form-loader">
+                <!-- loading Spinner -->
+                <svg
+                  aria-hidden="true"
+                  role="status"
+                  class="inline w-4 h-4 me-3 text-white animate-spin"
+                  viewBox="0 0 100 101"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="#E5E7EB"
+                  />
+                  <path
+                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span>Loading</span>
+              </span>
+              <span id="task-add-form-submit-btn-text">Save Task</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Task Add Modal End -->
+
+    <div class="mx-auto w-full max-w-4xl flex justify-between items-center px-4" >
+      <div class="w-1/2" >
+        <span class="font-semibold text-gray-600" >Total: </span> <span id="total-task-count" ></span>
+      </div>
+
+      <div class="row flex mx-auto w-1/2 justify-end mb-2">
+        <button onclick="loadTasks()" class="rounded-md rounded-r-none border border-r-0 border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+          All
+        </button>
+        <button onclick="loadTasks('status=pending')" class="rounded-md rounded-r-none rounded-l-none border border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+          Pending
+        </button>
+        <button onclick="loadTasks('status=in_progress')" class="rounded-md rounded-r-none rounded-l-none border border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+          Progress
+        </button>
+        <button onclick="loadTasks('status=completed')" class="rounded-md rounded-l-none border border-l-0 border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+          Completed
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div>
+      <div id="tab1Content" class="tab-content">
+        <div class="bg-white shadow rounded-lg p-4 mx-auto max-w-4xl">
+          <div id="calendar" class="w-full"></div>
+        </div>
+      </div>
+     
+      <div id="tab2Content" class="tab-content">
+        <div
+        id="eventList"
+        class="event-list w-full max-w-4xl space-y-2 mx-auto"
+        >
+        <div
+        class="w-full bg-gray-200 text-center rounded-lg p-4 select-none"
+        >
+        No Tasks to show
+      </div>
+    </div>
+
+
+<!-- Task View Modal -->
+<div
+  id="task-detailed-view-modal"
+  style="margin: 0"
+  class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden"
+>
+  <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-2xl font-semibold">Task Details</h2>
+      <button
+        id="task-detailed-view-close-modal"
+        class="text-gray-600 hover:text-gray-900"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="mb-4">
+      <h3 class="font-medium text-gray-700">Title:</h3>
+      <p id="task-detailed-view-title" class="text-sm text-gray-900"></p>
+    </div>
+
+    <div class="mb-4">
+      <h3 class="font-medium text-gray-700">Description:</h3>
+      <p
+        id="task-detailed-view-description"
+        class="text-sm text-gray-900"
+      ></p>
+    </div>
+
+    <div class="mb-4">
+      <h3 class="font-medium text-gray-700">Start:</h3>
+      <p id="task-detailed-view-start" class="text-sm text-gray-900"></p>
+    </div>
+
+    <div class="flex justify-end space-x-2">
+      <button
+        type="button"
+        id="cancel-btn"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+        onclick="document.getElementById('task-detailed-view-modal').classList.add('hidden')"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Task View Modal End -->
+
+    <!-- Task Edit Modal -->
+    <div
+      id="task-edit-modal"
+      style="margin: 0"
+      class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden"
+    >
+      <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-2xl font-semibold">Edit Task</h2>
+          <button
+            id="close-edit-modal"
+            class="text-gray-600 hover:text-gray-900"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <p id="task-edit-response-message" class="text-sm mb-2"></p>
+
+        <!-- Modal Form -->
+        <form id="task-edit-form">
+          <input type="hidden" id="task-edit-id" name="id" />
+          <div class="mb-4">
+            <label
+              for="task-edit-title"
+              class="block text-sm font-medium text-gray-700"
+              >Task Title</label
+            >
+            <input
+              type="text"
+              id="task-edit-title"
+              name="title"
+              required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label
+              for="task-edit-description"
+              class="block text-sm font-medium text-gray-700"
+              >Description</label
+            >
+            <textarea
+              id="task-edit-description"
+              name="description"
+              rows="4"
+              required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label
+              for="task-edit-start"
+              class="block text-sm font-medium text-gray-700"
+              >Start Date & Time</label
+            >
+            <input
+              type="datetime-local"
+              id="task-edit-start"
+              name="start"
+              required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              id="cancel-task-edit-modal"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+            >
+              Cancel
+            </button>
+
+            <button
+              id="submit-btn"
+              type="submit"
+              class="text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800 inline-flex items-center"
+            >
+              <span class="hidden" id="task-edit-form-loader">
+                <!-- loading Spinner -->
+                <svg
+                  aria-hidden="true"
+                  role="status"
+                  class="inline w-4 h-4 me-3 text-white animate-spin"
+                  viewBox="0 0 100 101"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="#E5E7EB"
+                  />
+                  <path
+                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span>Loading</span>
+              </span>
+              <span id="task-edit-form-submit-btn-text">Save Changes</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Task Edit Modal End -->
+
+    <!-- Task Delete Modal -->
+    <div
+      id="task-delete-modal"
+      style="margin: 0"
+      class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden"
+    >
+      <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-lg font-semibold">
+            Are sure to delete "<span id="deleting-task-title"></span>"
+          </h3>
+          <button
+            id="close-task-delete-modal"
+            class="text-gray-600 hover:text-gray-900"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <p id="task-delete-response-message" class="text-sm mb-2"></p>
+
+        <form id="task-delete-form">
+          <input type="text" id="task-delete-id" name="id" hidden />
+          <button
+            id="task-delete-form-submit-btn"
+            type="submit"
+            class="text-white bg-red-700 hover:bg-red-600 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800 inline-flex items-center"
+          >
+            <span class="hidden" id="task-delete-form-loader">
+              <!-- loading Spinner -->
+              <svg
+                aria-hidden="true"
+                role="status"
+                class="inline w-4 h-4 me-3 text-white animate-spin"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                  fill="#E5E7EB"
+                />
+                <path
+                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span>Loading</span>
+            </span>
+            <span id="task-delete-form-submit-btn-text">Yes, Delete</span>
+          </button>
+        </form>
+      </div>
+    </div>
+    <!-- Task Delete Modal End-->
+
+    <script src="js/index.js"></script>
+    <script src="js/taskModal.js"></script>
+    <!-- Form handler should import after index.js  -->
+    <script src="js/formHandlers.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+  </body>
+</html>
