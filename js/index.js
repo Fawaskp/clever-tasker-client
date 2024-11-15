@@ -1,3 +1,4 @@
+var globalTasks = []
 let TASK_API_URL = "http://localhost:8000/task/api";
 
 // Assigning logged-n username at page top
@@ -9,11 +10,29 @@ const asssignUserName = () => {
 
 
 // Handle Tab Switching
+function changeTabTo(tab){
+
+  let queryParams = new URLSearchParams(window.location.search);
+  queryParams.set('tab',tab)
+  history.replaceState(null,null,'?'+queryParams.toString())
+
+  if(tab=='tasks'){
+    document.getElementById("tab1Content").classList.remove("active");
+    document.getElementById("tab2Content").classList.add("active");
+  }
+  else{
+    document.getElementById("tab1Content").classList.add("active");
+    document.getElementById("tab2Content").classList.remove("active");
+  }
+}
+
 document.getElementById("tab1Btn").addEventListener("click", function () {
   document.getElementById("tab1Content").classList.add("active");
   document.getElementById("tab2Content").classList.remove("active");
   this.classList.add("bg-gray-300");
   document.getElementById("tab2Btn").classList.remove("bg-gray-300");
+  changeTabTo('calendar')
+  initCalendar(globalTasks)
 });
 
 document.getElementById("tab2Btn").addEventListener("click", function () {
@@ -21,6 +40,7 @@ document.getElementById("tab2Btn").addEventListener("click", function () {
   document.getElementById("tab1Content").classList.remove("active");
   this.classList.add("bg-gray-300");
   document.getElementById("tab1Btn").classList.remove("bg-gray-300");
+  changeTabTo('tasks')
 });
 
 function openEditModal(event) {
@@ -76,9 +96,8 @@ function changeCompleteStatus(taskId,status){
     })
   }
   catch(err){
-
+    console.log('Something went wrong while chaning complete status: ',err)
   }
-
 }
 
 function getButtons(event) {
@@ -90,8 +109,6 @@ function getButtons(event) {
     "rounded-full",
     "focus:outline-none",
   ];
-
-  
 
   const editBtn = document.createElement("button");
   editBtn.classList.add(
@@ -126,12 +143,11 @@ function getButtons(event) {
   ></path>
 </svg>`;
 
-
   let markCompleteIcon = `Mark completed <svg class="ms-4" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48">
   <path fill="#c8e6c9" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"></path><path fill="#4caf50" d="M34.586,14.586l-13.57,13.586l-5.602-5.586l-2.828,2.828l8.434,8.414l16.395-16.414L34.586,14.586z"></path>
   </svg>`
 
-    if(event.status == 'Completed'){
+  if(event.status == 'Completed'){
       markCompleteIcon = `Mark Uncompleted <svg class="ms-2" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="17" height="17" viewBox="0 0 40 40">
   <path fill="#f78f8f" d="M20,38.5C9.799,38.5,1.5,30.201,1.5,20S9.799,1.5,20,1.5S38.5,9.799,38.5,20S30.201,38.5,20,38.5z"></path><path fill="#c74343" d="M20,2c9.925,0,18,8.075,18,18s-8.075,18-18,18S2,29.925,2,20S10.075,2,20,2 M20,1 C9.507,1,1,9.507,1,20s8.507,19,19,19s19-8.507,19-19S30.493,1,20,1L20,1z"></path><path fill="#fff" d="M18.5 10H21.5V30H18.5z" transform="rotate(-134.999 20 20)"></path><path fill="#fff" d="M18.5 10H21.5V30H18.5z" transform="rotate(-45.001 20 20)"></path>
   </svg>`
@@ -151,8 +167,6 @@ function getButtons(event) {
     "dark:hover:bg-gray-100")
     markCompleteBtn.innerHTML = markCompleteIcon
 
-
-
   editBtn.addEventListener("click", () => openEditModal(event));
   deleteBtn.addEventListener("click", () =>
     openDeleteModal(event.id, event.title)
@@ -163,6 +177,7 @@ function getButtons(event) {
 
   return [editBtn, deleteBtn, markCompleteBtn];
 }
+
 
 function separateDateTime(datetimeStr) {
   const dateObj = new Date(datetimeStr);
@@ -183,6 +198,7 @@ function separateDateTime(datetimeStr) {
 
 // Load tasks
 function loadTasks(filter="") {
+
   fetch(`${TASK_API_URL}/list-create/?${filter}`, {
     headers: {
       "Content-Type": "application/json",
@@ -194,6 +210,7 @@ function loadTasks(filter="") {
       const tasks = events.results
       initCalendar(tasks);
       console.log("Events", tasks);
+      globalTasks = tasks
       const eventList = document.getElementById("eventList");
       const totalTaskCountEl = document.getElementById("total-task-count");
       totalTaskCountEl.textContent = events.total_count
@@ -271,6 +288,7 @@ function loadTasks(filter="") {
     .catch((error) => console.error("Error fetching events:", error));
 }
 
+// Render the calendar
 function initCalendar(event_list = []) {
   console.log("event list form calendar: ", event_list);
   var calendarEl = document.getElementById("calendar");
@@ -327,9 +345,72 @@ function ready_logout() {
   });
 }
 
+// filter the tasks
+function filterTasks(param,value){
+  let queryParams = new URLSearchParams(window.location.search);
+  if(param && value){
+    queryParams.set(param, value);
+    history.replaceState(null, null, "?"+queryParams.toString());
+    loadTasks(`${param}=${value}`)
+    setFilterButtonActive(value)
+  }
+  else{
+    loadTasks()
+    setFilterButtonActive('all')
+    queryParams.delete('status')
+    let newURL = window.location.origin+window.location.pathname+'?'+queryParams.toString()
+    history.replaceState(null, null, newURL);
+  }
+}
+
+
+// Activate the selected filter button
+function setFilterButtonActive(status){
+  const filterAllBtn = document.getElementById('task-filter-btn-all')
+  const filterPendingBtn = document.getElementById('task-filter-btn-pending')
+  const filterCompletedBtn = document.getElementById('task-filter-btn-completed')
+  const activeClasses = ['text-white','bg-slate-800','border-slate-800']
+  if(status=='completed'){
+    filterAllBtn.classList.remove(...activeClasses)    
+    filterPendingBtn.classList.remove(...activeClasses)    
+    filterCompletedBtn.classList.add(...activeClasses)    
+  }
+  else if(status=='pending'){
+    filterAllBtn.classList.remove(...activeClasses)    
+    filterPendingBtn.classList.add(...activeClasses)    
+    filterCompletedBtn.classList.remove(...activeClasses)    
+  }
+  else{
+    filterAllBtn.classList.add(...activeClasses)    
+    filterPendingBtn.classList.remove(...activeClasses)    
+    filterCompletedBtn.classList.remove(...activeClasses)    
+  }
+}
+
+// Set a initial tab based on url query param
+function activeInitialTab(){
+  let queryParams = new URLSearchParams(window.location.search);
+  let currentTab = queryParams.get('tab')
+  
+  if(currentTab=='tasks'){
+    changeTabTo('tasks')
+  }
+}
+
+  
+function initialLoadTaskLoadWithFilter(){
+
+  let queryParams = new URLSearchParams(window.location.search);
+  let statusFilter = queryParams.get('status')
+
+  let initialFilter = window.location.search
+  setFilterButtonActive(statusFilter)
+  loadTasks(initialFilter.slice(1));
+}
+
 window.onload = function () {
-  document.getElementById("tab1Content").classList.add("active");
-  loadTasks();
+  activeInitialTab()
+  initialLoadTaskLoadWithFilter()
   asssignUserName();
   ready_logout();
 };

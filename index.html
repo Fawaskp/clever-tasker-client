@@ -226,22 +226,25 @@
 
       <div class="row flex mx-auto w-1/2 justify-end mb-2">
         <button
-          onclick="loadTasks()"
-          class="rounded-md rounded-r-none border border-r-0 border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          id="task-filter-btn-all"
+          onclick="filterTasks()"
+          class="rounded-md rounded-r-none border border-r-0 border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
           type="button"
         >
           All
         </button>
         <button
-          onclick="loadTasks('status=pending')"
-          class="rounded-md rounded-r-none rounded-l-none border border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          id="task-filter-btn-pending"
+          onclick="filterTasks('status','pending')"
+          class="rounded-md rounded-r-none rounded-l-none border border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
           type="button"
         >
           Pending
         </button>
         <button
-          onclick="loadTasks('status=completed')"
-          class="rounded-md rounded-l-none border border-l-0 border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          id="task-filter-btn-completed"
+          onclick="filterTasks('status','completed')"
+          class="rounded-md rounded-l-none border border-l-0 border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
           type="button"
         >
           Completed
@@ -251,7 +254,7 @@
     <!-- Filter buttons End -->
 
     <!-- Tab-1 Content -->
-    <div id="tab1Content" class="tab-content mb-4">
+    <div id="tab1Content" class="tab-content mb-4 active">
       <div class="bg-white shadow rounded-lg p-4 mx-auto max-w-3xl">
         <div id="calendar" class="w-full"></div>
       </div>
