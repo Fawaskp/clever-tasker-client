@@ -30,7 +30,7 @@ function loadTasks() {
     filter = `status=${status}`
   }
 
-  fetch(`${TASK_API_URL}/list-create/?${filter}`, {
+  fetch(`${TASK_API_URL}/?${filter}`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,

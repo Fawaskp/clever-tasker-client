@@ -21,7 +21,7 @@ taskAddForm.addEventListener("submit", async (event) => {
 
   startFormLoading(formLoader, formBtnText);
   try {
-    const response = await fetch(`${TASK_API_URL}/list-create/`, {
+    const response = await fetch(`${TASK_API_URL}/`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
