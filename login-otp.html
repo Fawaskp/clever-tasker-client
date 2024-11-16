@@ -1,0 +1,112 @@
+<html>
+<head>
+    <script>
+        const accessToken = localStorage.getItem('access_token')
+
+        function validateToken(){
+            const AUTH_API_URL = 'http://localhost:8000/auth/api'
+            fetch(`${AUTH_API_URL}/validate-token/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            }).then((response)=>{
+                if(response.ok){
+                    window.location.href = 'index.html'
+                }
+            })
+        }
+
+        if(accessToken){
+            validateToken()
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="https://seeklogo.com/images/G/google-tasks-logo-13FF231D18-seeklogo.com.png">
+    <title>Login with OTP</title>
+</head>
+<body>
+    
+    <!-- OTP enter modal -->
+    <div id="otp-modal" class="hidden absolute w-full flex flex-col justify-center items-center bg-gray-800 bg-opacity-50 min-h-screen">
+        <div class="mx-auto flex w-full flex-col justify-center px-5 pt-0 md:max-w-[50%] lg:h-screen min-h-screen lg:px-6">
+            <div class="relative bg-white rounded-lg p-8 my-auto mb-auto mt-8 flex flex-col md:mt-16 w-[400px] max-w-[450px] mx-auto lg:mt-32">
+               
+                <button id="close-otp-modal" class="absolute top-4 right-4 text-gray-600 hover:text-gray-900 font-bold text-xl" aria-label="Close">
+                    &times;
+                </button>
+
+                <p class="text-2xl font-bold text-zinc-950 text-white">Enter OTP</p>
+                <p class="mb-6 mt-2 text-sm text-gray-700">Enter the 6-digit OTP sent to your email!</p>
+                <div>
+                    <form id="otp-form" class="mb-4">
+                        <div class="grid gap-2">
+                            <div class="grid gap-1">
+                                <label class="text-zinc-950 text-white" for="otp">OTP</label>
+                                <div class="grid grid-cols-6 gap-2">
+                                    <input 
+                                        class="h-12 w-full rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-950 placeholder:text-zinc-400 focus:outline-none border-zinc-800 bg-transparent" 
+                                        id="otp1" type="text" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="0" required>
+                                    <input 
+                                        class="h-12 w-full rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-950 placeholder:text-zinc-400 focus:outline-none border-zinc-800 bg-transparent" 
+                                        id="otp2" type="text" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="0" required>
+                                    <input 
+                                        class="h-12 w-full rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-950 placeholder:text-zinc-400 focus:outline-none border-zinc-800 bg-transparent" 
+                                        id="otp3" type="text" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="0" required>
+                                    <input 
+                                        class="h-12 w-full rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-950 placeholder:text-zinc-400 focus:outline-none border-zinc-800 bg-transparent" 
+                                        id="otp4" type="text" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="0" required>
+                                </div>
+                            </div>
+        
+                            <button
+                                class="bg-black text-white hover:bg-gray-800 mt-4 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-50" 
+                                type="submit">
+                                Verify OTP
+                            </button>
+                        </div>
+                    </form>        
+                    <p><a href="/login.html" class="font-medium text-sm text-black">Back to Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>  
+    
+
+     <div class="flex flex-col justify-center items-center bg-white min-h-screen">
+        <div class="mx-auto flex w-full flex-col justify-center px-5 pt-0 md:max-w-[50%] lg:h-screen min-h-screen lg:px-6">
+            <div class="my-auto mb-auto mt-8 flex flex-col md:mt-16 w-[350px] max-w-[450px] mx-auto lg:mt-32">
+                <p class="text-2xl font-bold text-zinc-950 text-white">Sign In</p>
+                <p class="mb-6 mt-2 text-sm text-gray-700">Enter your email!</p>
+                <div>
+                    <form id="login-form" class="mb-4">
+                        <div class="grid gap-2">
+                            <div class="grid gap-1">
+                                <label class="text-zinc-950 text-white" for="email">Email</label>
+                                <input 
+                                    id="email-field"
+                                    required
+                                    class="mb-2 h-11 w-full rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-950 placeholder:text-zinc-400 focus:outline-none border-zinc-800 bg-transparent text-white placeholder:text-zinc-400" 
+                                    id="email" placeholder="name@example.com" type="email" autocomplete="email" autocapitalize="none" autocorrect="off" name="email">
+                            </div>
+    
+                            <button
+                                class="bg-black text-white hover:bg-gray-800 mt-2 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-50" 
+                                type="submit">
+                                Sign in
+                            </button>
+                        </div>
+                    </form>
+    
+                    <p><a href="/login.html" class="font-medium text-sm text-black ">Sign in with Password</a></p>
+                    <p><a href="/signup.html" class="font-medium text-sm text-black">Don't have an account? Sign up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+     <script src="/js/otpLogin.js"></script>
+    
+</body>
+
+</html>

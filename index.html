@@ -19,10 +19,7 @@
           },
         }).then((response) => {
           if (!response.ok) {
-            console.log("token is not valid...");
             deleteTokens();
-          } else {
-            console.log("token is valid...");
           }
         });
       }

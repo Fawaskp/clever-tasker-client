@@ -197,7 +197,7 @@ function separateDateTime(datetimeStr) {
 }
 
 // Load tasks
-function loadTasks(filter="") {
+function loadTasks(filter) {
 
   fetch(`${TASK_API_URL}/list-create/?${filter}`, {
     headers: {
@@ -397,7 +397,7 @@ function activeInitialTab(){
   }
 }
 
-  
+
 function initialLoadTaskLoadWithFilter(){
 
   let queryParams = new URLSearchParams(window.location.search);
