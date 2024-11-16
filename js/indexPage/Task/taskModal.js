@@ -28,7 +28,6 @@ function openEditModal(event) {
     document.getElementById("task-edit-id").value = event.id;
     document.getElementById("task-edit-title").value = event.title;
     document.getElementById("task-edit-description").value = event.description;
-    console.log("STARTTTT --> ", event.start);
     document.getElementById("task-edit-start").value = event.start.split("+")[0];
   
     const modal = document.getElementById("task-edit-modal");

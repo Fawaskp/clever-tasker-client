@@ -1,5 +1,21 @@
 var globalTasks = []
 
+function toastify(message,type){
+  Toastify({
+    text:message,
+    duration: 3000, 
+    close: true,
+    gravity: "top", 
+    position: "right", 
+    stopOnFocus: true,
+    backgroundColor: type == 'error'
+    ? "linear-gradient(315deg, #ff0000, #ff4d4d)"
+    : "linear-gradient(315deg, #36d348, #51da22)",
+    className: "!rounded-lg shadow-lg",
+  }).showToast()
+
+}
+
 function changeCompleteStatus(taskId,status){
   const url = status=='Completed'? 'uncompleted' : 'completed' 
   try{
@@ -11,6 +27,12 @@ function changeCompleteStatus(taskId,status){
       }
     }).then((response)=>{
       if(response.ok){
+        if(url=='uncompleted'){
+          toastify('Task marked as Un-Completed.')
+        }
+        else{
+          toastify('Task marked as Completed.')
+        }
         loadTasks()
       }
     })

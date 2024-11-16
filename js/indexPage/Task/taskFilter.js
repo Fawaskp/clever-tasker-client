@@ -22,7 +22,7 @@ function filterTasks(param,value){
     const filterAllBtn = document.getElementById('task-filter-btn-all')
     const filterPendingBtn = document.getElementById('task-filter-btn-pending')
     const filterCompletedBtn = document.getElementById('task-filter-btn-completed')
-    const activeClasses = ['text-white','bg-slate-800','border-slate-800']
+    const activeClasses = ['!text-white','bg-slate-800','border-slate-800']
     if(status=='completed'){
       filterAllBtn.classList.remove(...activeClasses)    
       filterPendingBtn.classList.remove(...activeClasses)    
