@@ -35,6 +35,7 @@ taskAddForm.addEventListener("submit", async (event) => {
       modal.classList.add("hidden")
       toastify("Task successfully added!")
     } else {
+      stopFormLoading(formLoader, formBtnText);
       response.json().then((result) => console.log("Error->",result));
       toastify("Failed to add task. Please try again.","error")
     }
@@ -75,6 +76,7 @@ taskEditForm.addEventListener("submit", async (event) => {
       modal.classList.add("hidden")
       toastify("Task edited successfully!")
     } else {
+      stopFormLoading(formLoader, formBtnText);
       response.json().then((result) => console.log(result));
       toastify("Failed to edit task. Please try again.")
     }
@@ -117,6 +119,7 @@ taskDeleteForm.addEventListener("click", async (event) => {
       modal.classList.add("hidden");
       toastify("Task Deleted Successfully!")
     } else {
+      stopFormLoading(formLoader, formBtnText);
       response.json().then((result) => console.log(result));
       toastify("Failed to edit task. Please try again.","error")
     }
