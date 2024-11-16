@@ -8,8 +8,7 @@ function openModal() {
 
 function closeModal() {
   otpModal.style.display = "none";
-  window.location.hash = "";
-  window.location.search = "";
+  history.pushState(null, '', window.location.pathname);
 }
 
 closeModalButton.addEventListener("click", closeModal);
@@ -67,27 +66,12 @@ otpInputs.forEach((input, index) => {
   });
 });
 
-const setToken = (tokens) => {
-  localStorage.setItem("access_token", tokens.access);
-  localStorage.setItem("refresh_token", tokens.refresh);
-};
-
-const setCurrentUser = (access_token) => {
-  const arrayToken = access_token.split(".");
-  const tokenPayload = JSON.parse(atob(arrayToken[1]));
-  console.log(tokenPayload);
-  localStorage.setItem(
-    "current_user",
-    JSON.stringify({ name: tokenPayload.name, email: tokenPayload.email })
-  );
-};
-
 
 // OTP form submission handling
 document.getElementById("otp-form")
   .addEventListener("submit", async function (event) {
     event.preventDefault();
-
+    
     const otp = [];
     for (let i = 1; i <= 4; i++) {
       otp.push(document.getElementById("otp" + i).value);
@@ -99,7 +83,6 @@ document.getElementById("otp-form")
 
     if (otpValue.length === 4) {
       try {
-        const AUTH_API_URL = "http://localhost:8000/auth/api";
         const response = await fetch(`${AUTH_API_URL}/login/otp/verify/`, {
           method: "POST",
           headers: {
@@ -111,7 +94,6 @@ document.getElementById("otp-form")
         if (response.ok) {
           const tokens = await response.json();
           console.log("Response:> ", tokens);
-          alert("Login Successful!");
 
           setToken(tokens);
           setCurrentUser(tokens.access);
@@ -133,7 +115,15 @@ document.getElementById("otp-form")
 document  .getElementById("login-form")
   .addEventListener("submit", function (event) {
     event.preventDefault();
-    const AUTH_API_URL = "http://localhost:8000/auth/api";
+
+    const submitButton = document.getElementById('login-submit-btn');
+    const buttonText = document.getElementById('login-submit-btn-text');
+    const loadingSpinner = document.getElementById('login-submit-loader');
+
+    buttonText.classList.add('hidden')
+    loadingSpinner.classList.remove('hidden')
+    submitButton.disabled = true
+
     const email = document.getElementById("email-field").value;
 
     fetch(`${AUTH_API_URL}/login/otp/`, {
@@ -147,9 +137,15 @@ document  .getElementById("login-form")
       .then((data) => {
         console.log("Server Response:", data);
         openModal();
-        window.location.search = `?email=${email}`;
+
+        const currentHash = window.location.hash;
+        history.pushState(null, '', `?email=${email}${currentHash}`);
       })
       .catch((error) => {
         console.error("Error:", error);
+      }).finally(()=>{
+        buttonText.classList.remove('hidden')
+        loadingSpinner.classList.add('hidden')
+        submitButton.disabled = false
       });
   });

@@ -1,35 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script>
-      const AUTH_API_URL = "http://localhost:8000/auth/api";
-      const accessToken = localStorage.getItem("access_token");
-
-      function deleteTokens() {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-      }
-
-      function validateToken() {
-        fetch(`${AUTH_API_URL}/validate-token/`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }).then((response) => {
-          if (!response.ok) {
-            deleteTokens();
-          }
-        });
-      }
-
-      if (accessToken) {
-        validateToken();
-      } else {
-        window.location.href = "/login.html";
-      }
-    </script>
+    <script src="js/constants.js"></script>
+    <script src="js/token/validateTokenIndexPage.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Task Dashboard</title>
@@ -520,10 +493,16 @@
     <!-- Task Delete Modal End-->
 
     <!-- Scripts  -->
-    <script src="js/index.js"></script>
-    <script src="js/taskModal.js"></script>
-    <!-- Form handler should import after index.js  -->
-    <script src="js/formHandlers.js"></script>
+    <script src="js/indexPage/Task/taskModal.js"></script>
+    <script src="js/indexPage/logout.js"></script>
+    <script src="js/indexPage/changeTab.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/indexPage/Task/getTaskCardButtons.js"></script>
+    <script src="js/indexPage/Task/taskCardGenerator.js"></script>
+    <script src="js/indexPage/index.js"></script>
+    <script src="js/indexPage/Task/taskFilter.js"></script>
+    <script src="js/indexPage/initialLoadSetup.js"></script>
+    <script src="js/indexPage/formHandlers.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
   </body>
 </html>

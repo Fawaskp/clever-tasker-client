@@ -1,8 +1,14 @@
-const AUTH_API_URL = 'http://localhost:8000/auth/api'
 document.addEventListener('DOMContentLoaded', function() {
-    const signupForm = document.getElementById('signup-form');
-    signupForm.addEventListener('submit', async function(event) {
+    document.getElementById('signup-form').addEventListener('submit', async function(event) {
         event.preventDefault(); 
+
+        const submitButton = document.getElementById('signup-submit-btn');
+        const buttonText = document.getElementById('signup-submit-btn-text');
+        const loadingSpinner = document.getElementById('signup-submit-loader');
+
+        buttonText.classList.add('hidden')
+        loadingSpinner.classList.remove('hidden')
+        submitButton.disabled = true
 
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
@@ -33,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (response.ok) {
-                alert('Sign Up Successful!');
+                alert('Sign Up Successful, You can Log in!');
                 window.location.href = '/login.html';  
             } else {
                 alert(result.error || 'An error occurred. Please try again.');
@@ -41,6 +47,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.log('Error during sign up:', error);
             alert('An error occurred. Please try again.');
-        }
+        }finally{
+            buttonText.classList.remove('hidden')
+          loadingSpinner.classList.add('hidden')
+          submitButton.disabled = false
+          }
     });
 });

@@ -17,7 +17,6 @@ taskAddForm.addEventListener("submit", async (event) => {
   const formLoader = document.getElementById("task-add-form-loader");
   const formBtnText = document.getElementById("task-add-form-submit-btn-text");
   const responseMessage = document.getElementById("task-add-response-message");
-  const TASK_API_URL = "http://localhost:8000/task/api";
   const formData = new FormData(taskAddForm);
 
   startFormLoading(formLoader, formBtnText);
@@ -69,7 +68,6 @@ taskEditForm.addEventListener("submit", async (event) => {
   const formBtnText = document.getElementById("task-edit-form-submit-btn-text");
   const responseMessage = document.getElementById("task-edit-response-message");
   const taskId = document.getElementById("task-edit-id").value;
-  const TASK_API_URL = "http://localhost:8000/task/api";
   const formData = new FormData(taskEditForm);
 
   startFormLoading(formLoader, formBtnText);
